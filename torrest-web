@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 # torrest-web — open the Torrest web panel in the browser.
 # Starts serve.py (static app + same-origin API proxy) if not already
-# running, then opens the page. Engine host/port come from
-# ~/.config/torrestctl/config (shared with the torrestctl CLI).
+# running, then opens the page. Configuration (engine host/port, listen
+# port): ~/.config/torrest-web/config.
 set -euo pipefail
 
-PORT="${TORREST_WEB_PORT:-8135}"
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/torrest-web/config"
+PORT=""
+if [[ -f "$CONFIG_FILE" ]]; then
+    PORT="$(sed -n 's/^LISTEN_PORT="\{0,1\}\([0-9]*\)"\{0,1\}.*/\1/p' "$CONFIG_FILE" | head -1)"
+fi
+PORT="${TORREST_WEB_PORT:-${PORT:-8135}}"
+
 DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 URL="http://127.0.0.1:${PORT}"
 
@@ -18,4 +24,4 @@ if ! curl -s --max-time 1 -o /dev/null "$URL"; then
 fi
 
 brave-browser --new-tab "$URL" >/dev/null 2>&1 &
-echo "torrest-web: $URL (engine from ~/.config/torrestctl/config)"
+echo "torrest-web: $URL (config: $CONFIG_FILE)"
