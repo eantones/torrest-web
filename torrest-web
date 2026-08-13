@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# torrest-web — open the Torrest web panel in the browser.
+# Starts serve.py (static app + same-origin API proxy) if not already
+# running, then opens the page. Engine host/port come from
+# ~/.config/torrestctl/config (shared with the torrestctl CLI).
+set -euo pipefail
+
+PORT="${TORREST_WEB_PORT:-8135}"
+DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+URL="http://127.0.0.1:${PORT}"
+
+if ! curl -s --max-time 1 -o /dev/null "$URL"; then
+    nohup python3 "$DIR/serve.py" "$PORT" >/dev/null 2>&1 &
+    for _ in $(seq 1 10); do
+        curl -s --max-time 1 -o /dev/null "$URL" && break
+        sleep 0.3
+    done
+fi
+
+brave-browser --new-tab "$URL" >/dev/null 2>&1 &
+echo "torrest-web: $URL (engine from ~/.config/torrestctl/config)"
