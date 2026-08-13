@@ -183,8 +183,8 @@ export default class Torrents extends PureComponent {
         if (uri === "") {
             this.props.alert.error("Empty magnet URI");
         } else {
-            axios.get(`${this.props.settings.baseUrl}/add/magnet`,
-                {params: {uri: uri, download: this.props.settings.downloadOnAdd}})
+            axios.post(`${this.props.settings.baseUrl}/add/magnet`, null,
+                {params: {uri: uri, download: this.props.settings.downloadOnAdd, ignore_duplicate: true}})
                 .then(() => {
                     this.props.alert.show("Magnet added");
                     this.getData();
@@ -216,7 +216,8 @@ export default class Torrents extends PureComponent {
     };
 
     removeTorrent = () => {
-        axios.get(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/remove`)
+        axios.delete(`${this.props.settings.baseUrl}/torrents/${this.state.selected}`,
+            {params: {delete: false}})
             .then(() => this.getData())
             .catch(e => {
                 console.log(e);
@@ -225,7 +226,7 @@ export default class Torrents extends PureComponent {
     };
 
     pauseTorrent = () => {
-        axios.get(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/pause`)
+        axios.put(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/pause`)
             .then(() => {
                 this.props.alert.show("Torrent paused");
                 this.getData();
@@ -236,7 +237,7 @@ export default class Torrents extends PureComponent {
     };
 
     resumeTorrent = () => {
-        axios.get(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/resume`)
+        axios.put(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/resume`)
             .then(() => {
                 this.props.alert.show("Torrent resumed");
                 this.getData();
@@ -247,7 +248,7 @@ export default class Torrents extends PureComponent {
     };
 
     downloadTorrent = () => {
-        axios.get(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/download`)
+        axios.put(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/download`)
             .then(() => {
                 this.props.alert.show("Torrent downloading");
                 this.getData();
@@ -258,7 +259,7 @@ export default class Torrents extends PureComponent {
     };
 
     stopTorrent = () => {
-        axios.get(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/stop`)
+        axios.put(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/stop`)
             .then(() => {
                 this.props.alert.show("Torrent stopped");
                 this.getData();
@@ -289,7 +290,7 @@ export default class Torrents extends PureComponent {
 
     onFileDownloadClick = e => {
         const id = e.currentTarget.parentElement.parentElement.id;
-        axios.get(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/files/${id}/download`)
+        axios.put(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/files/${id}/download`)
             .then(() => {
                 this.props.alert.show("File downloading");
                 this.getFiles();
@@ -299,7 +300,7 @@ export default class Torrents extends PureComponent {
 
     onFileStopClick = e => {
         const id = e.currentTarget.parentElement.parentElement.id;
-        axios.get(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/files/${id}/stop`)
+        axios.put(`${this.props.settings.baseUrl}/torrents/${this.state.selected}/files/${id}/stop`)
             .then(() => {
                 this.props.alert.show("File stopped");
                 this.getFiles();

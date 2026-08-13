@@ -45,7 +45,7 @@ class App extends PureComponent {
     };
 
     setShutdown = () => {
-        axios.get(`${this.settings.baseUrl}/shutdown`)
+        axios.put(`${this.settings.baseUrl}/shutdown`)
             .then(() => this.setState({shutdown: true}))
             .catch((e) => {
                 console.log(e);
@@ -63,7 +63,7 @@ class App extends PureComponent {
 
     updatePaused = () => {
         const paused = this.state.paused;
-        axios.get(`${this.settings.baseUrl}/${paused ? "resume" : "pause"}`)
+        axios.put(`${this.settings.baseUrl}/${paused ? "resume" : "pause"}`)
             .then(() => {
                 this.setState({paused: !paused});
                 this.props.alert.show(`Service ${paused ? "resumed" : "paused"}`);

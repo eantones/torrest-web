@@ -15,7 +15,9 @@ export function getSettings() {
     const remember = Boolean(baseUrl && refreshRate && downloadOnAdd);
 
     return {
-        baseUrl: remember ? baseUrl : "http://localhost:8080",
+        // Empty base URL = same origin: the bundled serve.py proxies the API,
+        // so the app works with zero configuration.
+        baseUrl: remember ? baseUrl : "",
         // TODO: Add refresh rate to getData
         refreshRate: remember ? refreshRate : 1,
         downloadOnAdd: remember ? downloadOnAdd === "true" : false,
@@ -49,7 +51,7 @@ export default class Settings extends PureComponent {
     saveSettings = () => {
         for (let key in this.settings) {
             // noinspection JSUnfilteredForInLoop
-            if (this.settings[key] === "") {
+            if (key !== "baseUrl" && this.settings[key] === "") {
                 this.props.alert.error("Invalid settings");
                 return
             }
@@ -88,7 +90,7 @@ export default class Settings extends PureComponent {
                                 <InputGroup.Text>Base URL</InputGroup.Text>
                                 <CustomFormControl
                                     type="text"
-                                    placeholder="eg. http://localhost:8080"
+                                    placeholder="empty = same origin (proxy), or http://host:61235"
                                     aria-label="Base URL"
                                     name="baseUrl"
                                     onChange={this.onChangeValue}
