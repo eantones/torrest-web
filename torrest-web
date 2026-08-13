@@ -47,7 +47,8 @@ case "${1:-help}" in
         fi
         running || { echo "torrest-web: failed to start" >&2; exit 1; }
         brave-browser --new-tab "$URL" >/dev/null 2>&1 &
-        echo "torrest-web: $URL"
+        echo "torrest-web: panel running at $URL (tab opened in Brave)"
+        echo "torrest-web: server stays in background — 'torrest-web stop' to stop it"
         ;;
     stop)
         if fuser -k -TERM "${PORT}/tcp" >/dev/null 2>&1; then
